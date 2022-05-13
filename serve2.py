@@ -18,10 +18,10 @@ model_gensim = Doc2Vec.load("model/gensim_model_2")
 # df = pd.read_csv('data/df_final_2.csv', sep='|',converters={'doc_vector': literal_eval})
 # df.doc_vector = df.doc_vector.map(lambda x: convert_array(x))
 model_classification = load_model('model/model_final_2.h5')
-model_cls = load_model('model/model_fianl.h5')
+model_cls = load_model('model/clas_model_3.h5')
 tfIdf = pickle.load(open("model/tfidf.pickle", "rb" ))
 domain_label = load_file_label('label_cls/domain_label.json')
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://localhost:9202")
 
 
 @app.route("/cls/multi-predict", methods=['GET'])
@@ -42,14 +42,19 @@ def predicts_domain():
 @app.route("/cls/predict", methods=['GET'])
 def predict_domain():
     product_title = request.args.get("name")
-    result = []
+    result = {}
     title = text_pre_processing(product_title)
     title = word_separation(title)
     title = tfIdf.transform([title]).toarray()
     y_preds = model_cls.predict(title)
+    y_pro = np.argmax(y_preds, axis = 1)
     y_preds = np.argmax(y_preds, axis=1)
-    s = {"product_title": product_title, "label": domain_label[str(y_preds[0])]}
-    result.append(s)
+    if y_preds[0] != 16 and y_pro[0] >= 0.85:
+        label = y_preds[0]
+    else:
+        label = 16
+    s = {"product_title": product_title, "label": domain_label[str(label)]}
+    result["result"] = [s]
     data = json.dumps(result, ensure_ascii=False)
     return data
 
