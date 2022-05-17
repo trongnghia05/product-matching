@@ -1,2 +1,6 @@
 gensim==4.1.2
 tensorflow==2.6.0
+pivi
+pandas
+numpy
+flask

@@ -20,8 +20,8 @@ model_gensim = Doc2Vec.load("model/gensim_model_2")
 model_classification = load_model('model/model_final_2.h5')
 model_cls = load_model('model/clas_model_3.h5')
 tfIdf = pickle.load(open("model/tfidf.pickle", "rb" ))
-domain_label = load_file_label('label_cls/domain_label.json')
-es = Elasticsearch("http://localhost:9202")
+domain_label = load_file_label('label_cls/domain_label_kiotpro_new.json')
+es = Elasticsearch("http://localhost:9200")
 
 
 @app.route("/cls/multi-predict", methods=['GET'])
@@ -53,7 +53,7 @@ def predict_domain():
         label = y_preds[0]
     else:
         label = 16
-    s = {"product_title": product_title, "label": domain_label[str(label)]}
+    s = {"label": domain_label[str(label)]["name"], "id": domain_label[str(label)]["id"], "parent_id": domain_label[str(label)]["parent_id"]}
     result["result"] = [s]
     data = json.dumps(result, ensure_ascii=False)
     return data
@@ -110,4 +110,4 @@ def home():
     result["similar product"] = similar_products
     data = json.dumps(result, ensure_ascii=False)
     return data
-app.run(host='localhost', port ='5112')
+app.run(host='0.0.0.0', port ='5112')

@@ -1,0 +1,212 @@
+{
+    "0": {
+        "name": "case - bao da - \u1ed1p l\u01b0ng m\u00e1y t\u00ednh b\u1ea3ng",
+        "id": "",
+        "parent_id": ""
+    },
+    "1": {
+        "name": "case - bao da - \u1ed1p l\u01b0ng \u0111i\u1ec7n tho\u1ea1i",
+        "id": "",
+        "parent_id": ""
+    },
+    "2": {
+        "name": "Apple iPad",
+        "id": 293,
+        "parent_id": 291
+    },
+    "3": {
+        "name": "Tablet Samsung",
+        "id": 376,
+        "parent_id": 291
+    },
+    "4": {
+        "name": "m\u00e1y t\u00ednh b\u1ea3ng acer",
+        "id": "",
+        "parent_id": ""
+    },
+    "5": {
+        "name": "m\u00e1y t\u00ednh b\u1ea3ng asus",
+        "id": "",
+        "parent_id": ""
+    },
+    "6": {
+        "name": "m\u00e1y t\u00ednh b\u1ea3ng dell",
+        "id": "",
+        "parent_id": ""
+    },
+    "7": {
+        "name": "m\u00e1y t\u00ednh b\u1ea3ng kh\u00e1c",
+        "id": "",
+        "parent_id": ""
+    },
+    "8": {
+        "name": "Tablet Lenovo",
+        "id": 377,
+        "parent_id": 291
+    },
+    "9": {
+        "name": "m\u00e1y t\u00ednh b\u1ea3ng microsoft surface",
+        "id": "",
+        "parent_id": ""
+    },
+    "10": {
+        "name": "ph\u1ee5 ki\u1ec7n \u0111i\u1ec7n tho\u1ea1i kh\u00e1c",
+        "id": "",
+        "parent_id": ""
+    },
+    "11": {
+        "name": "pin - battery",
+        "id": "",
+        "parent_id": ""
+    },
+    "12": {
+        "name": "s\u1ea1c - c\u00e1p n\u1ed1i",
+        "id": "",
+        "parent_id": ""
+    },
+    "13": {
+        "name": "tai nghe",
+        "id": "",
+        "parent_id": ""
+    },
+    "14": {
+        "name": "th\u1ebb n\u1ea1p ti\u1ec1n",
+        "id": "",
+        "parent_id": ""
+    },
+    "15": {
+        "name": "t\u00fai x\u00e1ch",
+        "id": "",
+        "parent_id": ""
+    },
+    "16": {
+        "name": "unknown",
+        "id": "",
+        "parent_id": ""
+    },
+    "17": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i blackberry",
+        "id": "",
+        "parent_id": ""
+    },
+    "18": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i fpt - f-mobile",
+        "id": "",
+        "parent_id": ""
+    },
+    "19": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i gionee",
+        "id": "",
+        "parent_id": ""
+    },
+    "20": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i htc",
+        "id": "",
+        "parent_id": ""
+    },
+    "21": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i huawei",
+        "id": "",
+        "parent_id": ""
+    },
+    "22": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i iphone",
+        "id": "",
+        "parent_id": ""
+    },
+    "23": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i kh\u00e1c",
+        "id": "",
+        "parent_id": ""
+    },
+    "24": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i lenovo",
+        "id": "",
+        "parent_id": ""
+    },
+    "25": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i lg",
+        "id": "",
+        "parent_id": ""
+    },
+    "26": {
+        "name": "Masstel",
+        "id": 388,
+        "parent_id": 257
+    },
+    "27": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i mobell",
+        "id": "",
+        "parent_id": ""
+    },
+    "28": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i mobistar - mobiistar ",
+        "id": "",
+        "parent_id": ""
+    },
+    "29": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i motorola",
+        "id": "",
+        "parent_id": ""
+    },
+    "30": {
+        "name": "Nokia",
+        "id": 268,
+        "parent_id": 257
+    },
+    "31": {
+        "name": "Oppo",
+        "id": 265,
+        "parent_id": 257
+    },
+    "32": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i philips",
+        "id": "",
+        "parent_id": ""
+    },
+    "33": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i q-mobile - q-smart",
+        "id": "",
+        "parent_id": ""
+    },
+    "34": {
+        "name": "Realme",
+        "id": 266,
+        "parent_id": 257
+    },
+    "35": {
+        "name": "Samsung",
+        "id": 263,
+        "parent_id": 257
+    },
+    "36": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i sky",
+        "id": "",
+        "parent_id": ""
+    },
+    "37": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i sony",
+        "id": "",
+        "parent_id": ""
+    },
+    "38": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i vertu",
+        "id": "",
+        "parent_id": ""
+    },
+    "39": {
+        "name": "\u0111i\u1ec7n tho\u1ea1i viettel",
+        "id": "",
+        "parent_id": ""
+    },
+    "40": {
+        "name": "Vivo",
+        "id": 267,
+        "parent_id": 257
+    },
+    "41": {
+        "name": "Xiaomi",
+        "id": 264,
+        "parent_id": 257
+    }
+}
