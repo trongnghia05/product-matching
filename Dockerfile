@@ -19,4 +19,4 @@ COPY . /app
 
 ENTRYPOINT [ "python" ]
 
-CMD ["serve2.py"]
+CMD ["serve.py"]

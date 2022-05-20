@@ -1,58 +1,121 @@
 from gensim.models.doc2vec import Doc2Vec
 from keras.models import load_model
 import pandas as pd
+import re
 import numpy as np
 from ast import literal_eval
-from flask import Flask, request
+from flask import Flask
 import json
-import utils
+from flask import request
+from elasticsearch import Elasticsearch
 
-
-global model_gensim
-global df
-global model_classification
-
-
-model_classification = None
-model_gensim = None
-df = None
-
+from  utils import *
 
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET"])
-def hello_world():
-    return "Product Matching Service"
+model_gensim = Doc2Vec.load("model/gensim_model_2")
+# df = pd.read_csv('data/df_final_2.csv', sep='|',converters={'doc_vector': literal_eval})
+# df.doc_vector = df.doc_vector.map(lambda x: convert_array(x))
+model_classification = load_model('model/model_final_2.h5')
+model_cls = load_model('model/cls_model.h5')
+tfIdf = pickle.load(open("model/tfidf.pickle", "rb" ))
+domain_label = load_file_label('label_cls/domain_label_kiotpro_new.json')
+es = Elasticsearch("http://localhost:9200")
 
+
+@app.route("/cls/multi-predict", methods=['GET'])
+def predicts_domain():
+    result = {}
+    predicts = []
+    product_titles = request.args.get("name")
+    titles_vector = [text_process_cls_domain(txt) for txt in product_titles]
+    titles_vector = [word_separation(txt) for txt in titles_vector]
+    titles_vector = tfIdf.transform(titles_vector).toarray()
+    y_preds = model_cls.predict(titles_vector)
+    y_pro = np.argmax(y_preds, axis=1)
+    y_preds = np.argmax(y_preds, axis=1)
+    for i in range(y_preds.shape[0]):
+        if y_preds[i] != 16 and y_pro[i] >= 0.85:
+            label = y_preds[i]
+        else:
+            label = 16
+        s = {"label": domain_label[str(label)]["name"], "id": domain_label[str(label)]["id"],
+             "parent_id": domain_label[str(label)]["parent_id"]}
+        predicts.append(s)
+    result["result"] = predicts
+    data = json.dumps(result, ensure_ascii=False)
+    return data
+
+@app.route("/cls/predict", methods=['GET'])
+def predict_domain():
+    product_title = request.args.get("name")
+    result = {}
+    title = text_pre_processing(product_title)
+    title = word_separation(title)
+    title = tfIdf.transform([title]).toarray()
+    y_preds = model_cls.predict(title)
+    y_pro = np.argmax(y_preds, axis = 1)
+    y_preds = np.argmax(y_preds, axis=1)
+    if y_preds[0] != 16 and y_pro[0] >= 0.85:
+        label = y_preds[0]
+    else:
+        label = 16
+    s = {"label": domain_label[str(label)]["name"], "id": domain_label[str(label)]["id"], "parent_id": domain_label[str(label)]["parent_id"]}
+    result["result"] = [s]
+    data = json.dumps(result, ensure_ascii=False)
+    return data
 
 @app.route("/matching/predict", methods=['GET'])
 def home():
-    data = {}
-    products = []
-    name = request.args.get('name')
-    df_predict = utils.predict(name, model_gensim, model_classification, df)
-    category_predict = pd.DataFrame(df_predict[df.predict >= 0.5].groupby(['rules'])['product_key'].count())
+    title_exam = request.args.get("name")
+    print("title_exam: ", title_exam)
+
+    res = es.search(index="word_embed", sort = ["_score"], size=50, query={
+        "match": {
+            "full_name": {
+                "query": title_exam
+            }
+        }
+    })
+
+    product_key = []
+    full_name = []
+    rules = []
+    doc_vector = []
+
+    for product in res["hits"]["hits"]:
+        product_key.append(product["_source"]["product_key"])
+        full_name.append(product["_source"]["full_name"])
+        rules.append(product["_source"]["rules"])
+        doc_vector.append(list(product["_source"]["doc_vector"]))
+
+
+    df = pd.DataFrame({"product_key": product_key,
+                       "rules": rules,
+                       "full_name": full_name,
+                       "doc_vector": doc_vector})
+
+    df_predict = predict(title_exam, model_gensim, model_classification, df)
+    df_return = df_predict[['product_key', 'rules', 'full_name', 'predict']].head(10)
+    df_return.reset_index(drop=True, inplace=True)
+    result = {}
+    similar_products = []
+    print(df_return.head())
+    for i in range(df_return.shape[0]):
+        item = {}
+        item['product_key'] = str(df_return.loc[i, "product_key"])
+        item['label'] = df_return.loc[i, "rules"]
+        item['full_name'] = df_return.loc[i, "full_name"]
+        item['similarity'] = str(df_return.loc[i, "predict"])
+        similar_products.append(item)
+    category_predict = pd.DataFrame(df_return[df_return.predict > 0.5].groupby(['rules'])["product_key"].count())
     if len(category_predict) > 0:
-        category_predict = category_predict.index[category_predict['product_key'].values.argmax()]
-        data["category"] = category_predict
-        df_predict = df_predict.head(10)[["product_key", "full_name", "predict", "rules"]].transpose()
-
-        for product_id in df_predict.columns:
-            products.append({"product_key:": df_predict.loc['product_key', product_id],
-                             "full_name: ": df_predict.loc['full_name', product_id],
-                             "similarity: ": df_predict.loc['predict', product_id],
-                             "label: ": df_predict.loc['rules', product_id],
-                             })
-    data["similar product"] = products
-    data = json.dumps(data, ensure_ascii=False)
+        category_predict = category_predict.index[category_predict["product_key"].values.argmax()]
+        result["category"] = category_predict
+    else:
+        result["category"] = ""
+    result["similar product"] = similar_products
+    data = json.dumps(result, ensure_ascii=False)
     return data
-
-
-if __name__ == "__main__":
-    model_gensim = Doc2Vec.load("model/gensim_model_2")
-    df = pd.read_csv('data/df_final_2_small.csv', sep='|',converters={'doc_vector': literal_eval})
-    print(df.columns)
-    df.doc_vector = df.doc_vector.map(lambda x: utils.convert_array(x))
-    model_classification = load_model('model/model_final_3.h5')
-    app.run(host='localhost', port='5112')
+app.run(host='0.0.0.0', port ='5112')
