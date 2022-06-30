@@ -1,6 +1,7 @@
 from gensim.models.doc2vec import Doc2Vec
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import pandas as pd
+import argparse
 import re
 import numpy as np
 from ast import literal_eval
@@ -8,27 +9,30 @@ from flask import Flask
 import json
 from flask import request
 from elasticsearch import Elasticsearch
+from utils import *
+import os
 
-from  utils import *
+# IP_ELASTICSEARCH = "localhost"
+# PORT_ELASTICSEARCH = 9200
+IP_FLASK = "0.0.0.0"
+PORT_FLASK = 5112
+model_gensim = None
+model_classification = None
+model_cls = None
+tfIdf = None
+domain_label = None
+es = None
+
 
 app = Flask(__name__)
-
-
-model_gensim = Doc2Vec.load("model/gensim_model_2")
-# df = pd.read_csv('data/df_final_2.csv', sep='|',converters={'doc_vector': literal_eval})
-# df.doc_vector = df.doc_vector.map(lambda x: convert_array(x))
-model_classification = load_model('model/model_final_2.h5')
-model_cls = load_model('model/cls_model.h5')
-tfIdf = pickle.load(open("model/tfidf.pickle", "rb" ))
-domain_label = load_file_label('label_cls/domain_label_kiotpro_new.json')
-es = Elasticsearch("http://localhost:9200")
 
 
 @app.route("/cls/multi-predict", methods=['GET'])
 def predicts_domain():
     result = {}
     predicts = []
-    product_titles = request.args.get("name")
+    product_titles = request.args.getlist("name")
+    print("product_titles: ", product_titles)
     titles_vector = [text_process_cls_domain(txt) for txt in product_titles]
     titles_vector = [word_separation(txt) for txt in titles_vector]
     titles_vector = tfIdf.transform(titles_vector).toarray()
@@ -40,8 +44,7 @@ def predicts_domain():
             label = y_preds[i]
         else:
             label = 16
-        s = {"label": domain_label[str(label)]["name"], "id": domain_label[str(label)]["id"],
-             "parent_id": domain_label[str(label)]["parent_id"]}
+        s = {"label": domain_label[str(label)]["name"], "id": domain_label[str(label)]["id"], "parent_id": domain_label[str(label)]["parent_id"]}
         predicts.append(s)
     result["result"] = predicts
     data = json.dumps(result, ensure_ascii=False)
@@ -118,4 +121,35 @@ def home():
     result["similar product"] = similar_products
     data = json.dumps(result, ensure_ascii=False)
     return data
-app.run(host='0.0.0.0', port ='5112')
+
+if __name__ == "__main__":
+    env = os.environ
+    parser = argparse.ArgumentParser(description='Optional app description')
+
+    parser.add_argument('--ip_elas', type=str, default= "localhost", help='A required str positional argument')
+    parser.add_argument('--port_elas', type=int, default=9200, help='An optional integer positional argument')
+    parser.add_argument('--ip_flask', type=str, default= "0.0.0.0", help='An optional integer argument')
+    parser.add_argument('--port_flask', type=int, default=5112, help='A boolean switch')
+
+    args = parser.parse_args()
+
+    # IP_ELASTICSEARCH = args.ip_elas
+    # PORT_ELASTICSEARCH = args.port_elas
+    # IP_FLASK = args.ip_flask
+    # PORT_FLASK = args.port_flask
+
+    # IP_ELASTICSEARCH = env["IP_ELASTICSEARCH"]
+    # PORT_ELASTICSEARCH = env["PORT_ELASTICSEARCH"]
+
+
+    # print(IP_ELASTICSEARCH)
+    # print(PORT_ELASTICSEARCH)
+
+    model_gensim = Doc2Vec.load("model/gensim_model_2")
+    model_classification = load_model('model/model_final_2.h5')
+    model_cls = load_model('model/cls_model.h5')
+    tfIdf = pickle.load(open("model/tfidf.pickle", "rb"))
+    domain_label = load_file_label('label_cls/domain_label_kiotpro_new.json')
+    # es = Elasticsearch("http://" + IP_ELASTICSEARCH + ":" + str(PORT_ELASTICSEARCH))
+
+    app.run(host="0.0.0.0", port=5112)

@@ -1,5 +1,6 @@
 gensim==4.1.2
 tensorflow==2.6.0
+elasticsearch==7.17
 pivi
 pandas
 numpy

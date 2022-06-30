@@ -1,22 +1,21 @@
-FROM continuumio/anaconda3
+FROM python:3.7.13-slim-buster
 
-RUN apt-get update && apt-get install -y libgtk2.0-dev && \
-    rm -rf /var/lib/apt/lists/*
+RUN pip install numpy
+RUN pip install pandas
+RUN pip install flask
+RUN pip install scikit-learn
+RUN pip install gensim==4.1.2
+RUN pip install elasticsearch==7.17.1
+RUN pip install tensorflow==2.7.0
+RUN pip install pyvi
 
-RUN /opt/conda/bin/conda update -n base -c defaults conda && \
-    /opt/conda/bin/conda install python=3.7 && \
-    /opt/conda/bin/conda install anaconda-client && \	
-    /opt/conda/bin/conda install numpy pandas flask scikit-learn keras -y && \
-    /opt/conda/bin/conda upgrade dask && \
-    pip install gensim==4.1.2 && \
-    pip install elasticsearch==7.17 && \
-    pip install tensorflow==2.6.0 && \
-    pip install pyvi
 
 WORKDIR /app
-
 COPY . /app
 
-ENTRYPOINT [ "python" ]
+ENV IP_ELASTICSEARCH="localhost"
+ENV PORT_ELASTICSEARCH=9200
+
+ENTRYPOINT ["python"]
 
 CMD ["serve.py"]
